@@ -6,6 +6,7 @@ public enum LengthUnit {
     YARDS(3.0),
         CENTIMETERS(0.0328084);
     private final double toFeetFactor;
+
     LengthUnit(double toFeetFactor)
     {
         this.toFeetFactor=toFeetFactor;
@@ -15,5 +16,9 @@ public enum LengthUnit {
     {
         return value * toFeetFactor;
 
+    }
+
+    public double fromFeet(double value){
+        return value/toFeetFactor;
     }
 }
