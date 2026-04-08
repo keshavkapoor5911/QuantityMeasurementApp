@@ -35,8 +35,9 @@ public class QuantityLength {
     }
 
     // Optional: keep if you still want raw double conversion
-    public double toConvert(LengthUnit targetUnit) {
-        return convert(this.value, this.unit, targetUnit);
+    public QuantityLength toConvert(LengthUnit targetUnit) {
+        double convertedValue = convert(this.value, this.unit,targetUnit);
+        return new QuantityLength(convertedValue,targetUnit);
     }
 
     // Static conversion method
@@ -52,6 +53,26 @@ public class QuantityLength {
         double valueInFeet = sourceUnit.toFeet(value);
         return targetUnit.fromFeet(valueInFeet);
     }
+
+    public QuantityLength add(QuantityLength other){
+        if(other == null){
+            throw new  IllegalArgumentException();
+        }
+        if(!Double.isFinite(other.value)){
+            throw new IllegalArgumentException();
+        }
+        // convert to feet
+        double thisInFeet = this.unit.toFeet(this.value);
+        double otherInFeet= other.unit.toFeet(other.getValue());
+        //ADD
+        double SumInFeet = thisInFeet+otherInFeet;
+        double result = this.unit.fromFeet(SumInFeet);
+        return new QuantityLength(result,this.unit);
+    }
+
+   public static QuantityLength add(QuantityLength q1, QuantityLength q2){
+        return q1.add(q2);
+   }
 
     @Override
     public boolean equals(Object obj) {
