@@ -1,25 +1,29 @@
 package com.quantity.measurement.enums;
 
 public enum LengthUnit {
+
     FEET(1.0),
     INCH(1.0 / 12),
     YARDS(3.0),
-    CENTIMETERS(0.0328084); // because 1 cm = 0.0328084 feet
-    private final double conversionFactor;
+    CENTIMETERS(1.0 / 30.48);
 
-    LengthUnit(double conversionFactor) {
-        this.conversionFactor = conversionFactor;
+    private final double toFeetFactor;
+
+    LengthUnit(double toFeetFactor) {
+        this.toFeetFactor = toFeetFactor;
     }
 
-    public double toBase(double value) {
-        return value * conversionFactor;
+    public double convertToBaseUnit(double value) {
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+        return value * toFeetFactor;
     }
 
-    public double fromBase(double baseValue) {
-        return baseValue / conversionFactor;
-    }
-
-    public double getConversionFactor() {
-        return conversionFactor;
+    public double convertFromBaseUnit(double value) {
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+        return value / toFeetFactor;
     }
 }
