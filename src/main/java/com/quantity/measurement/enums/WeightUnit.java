@@ -33,7 +33,6 @@ public enum WeightUnit implements IMeasurable {
             throw new IllegalArgumentException("Invalid value");
         }
     }
-
     @Override
     public String getUnitName() {
         return this.name();
