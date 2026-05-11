@@ -1,7 +1,6 @@
 package com.quantity.measurement.model;
 
-import com.quantity.measurement.enums.IMeasurable;
-import com.quantity.measurement.enums.WeightUnit;
+import com.quantity.measurement.enumslmpl.WeightUnit;
 
 public class QuantityWeight {
 
@@ -33,13 +32,12 @@ public class QuantityWeight {
         Quantity<WeightUnit> result = quantity.toConvert(targetUnit);
         return new QuantityWeight(result.getValue(), result.getUnit());
     }
+
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof QuantityWeight)) {return false;
+        if (!(o instanceof QuantityWeight)) {
+            return false;
         }
         return this.quantity.equals(((QuantityWeight) o).quantity);
     }
-
-
-
 }

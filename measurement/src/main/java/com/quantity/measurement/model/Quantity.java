@@ -2,10 +2,11 @@ package com.quantity.measurement.model;
 
 import com.quantity.measurement.enums.IMeasurable;
 import java.util.Objects;
+import java.util.function.DoubleBinaryOperator;
 
 public class Quantity<U extends IMeasurable> {
 
-    private final double EPSILON = 1e-6;
+    private static final double EPSILON = 1e-6;
     private final double value;
     private final U unit;
 
@@ -20,15 +21,6 @@ public class Quantity<U extends IMeasurable> {
         this.unit = unit;
     }
 
-    // Getters
-    public double getValue() {
-        return value;
-    }
-
-    public U getUnit() {
-        return unit;
-    }
-
     // Conversion
     public Quantity<U> toConvert(U targetUnit) {
         if (targetUnit == null)
@@ -40,48 +32,125 @@ public class Quantity<U extends IMeasurable> {
         return new Quantity<>(converted, targetUnit);
     }
 
-    // Add
+    private enum ArithmeticOperation {
+        ADD((a, b) -> a + b),
+
+        SUBTRACT((a, b) -> a - b),
+
+        DIVIDE((a, b) -> {
+            if (Math.abs(b) < EPSILON) {
+                throw new ArithmeticException("Division by zero");
+            }
+            return a / b;
+        });
+
+        private final DoubleBinaryOperator op;
+
+        ArithmeticOperation(DoubleBinaryOperator op) {
+            this.op = op;
+        }
+
+        double apply(double a, double b) {
+            return op.applyAsDouble(a, b);
+        }
+    }
+
+    // ================= GETTERS =================
+
+    public double getValue() {
+        return value;
+    }
+
+    public U getUnit() {
+        return unit;
+    }
+
+    // ================= VALIDATION =================
+
+    private void validate(Quantity<U> other, U target, boolean requireTarget) {
+        if (other == null) {
+            throw new NullPointerException("Quantity must not be null");
+        }
+
+        if (requireTarget && target == null) {
+            throw new NullPointerException("Target unit must not be null");
+        }
+
+        if (!this.unit.getClass().equals(other.unit.getClass())) {
+            throw new IllegalArgumentException("Different measurement types");
+        }
+    }
+
+    // ================= CORE =================
+
+    private double base(U unit, double value) {
+        return unit.convertToBaseUnit(value);
+    }
+
+    private double operate(Quantity<U> other, ArithmeticOperation op) {
+        double a = base(this.unit, this.value);
+        double b = base(other.unit, other.value);
+        return op.apply(a, b);
+    }
+
+    private double round(double value) {
+        return Math.round(value * 1000000.0) / 1000000.0;
+    }
+
+    // ================= OPERATIONS =================
+
     public Quantity<U> add(Quantity<U> other) {
         return add(other, this.unit);
     }
 
     public Quantity<U> add(Quantity<U> other, U targetUnit) {
-        if (other == null || targetUnit == null)
-            throw new NullPointerException("Second quantity & targetUnit must not be null");
+        validate(other, targetUnit, true);
+        this.unit.validateOperationSupport("ADD");
 
-        if (!this.unit.getClass().equals(other.unit.getClass()))
-            throw new IllegalArgumentException("Cannot operate on different measurement categories");
+        double resultBase = operate(other, ArithmeticOperation.ADD);
+        double converted = targetUnit.convertFromBaseUnit(resultBase);
 
-        double thisBase = this.unit.convertToBaseUnit(this.value);
-        double otherBase = other.unit.convertToBaseUnit(other.value);
-
-        double sumBase = thisBase + otherBase;
-        double result = targetUnit.convertFromBaseUnit(sumBase);
-
-        return new Quantity<>(result, targetUnit);
+        return new Quantity<>(converted, targetUnit);
     }
 
-    // Equality Check
+    public Quantity<U> subtract(Quantity<U> other) {
+        return subtract(other, this.unit);
+    }
+
+    public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
+        validate(other, targetUnit, true);
+        this.unit.validateOperationSupport("SUBTRACT");
+
+        double resultBase = operate(other, ArithmeticOperation.SUBTRACT);
+        double converted = targetUnit.convertFromBaseUnit(resultBase);
+
+        return new Quantity<>(converted, targetUnit);
+    }
+
+    public double divide(Quantity<U> other) {
+        validate(other, null, false);
+        this.unit.validateOperationSupport("DIVIDE");
+        return operate(other, ArithmeticOperation.DIVIDE);
+    }
+    // ================= EQUALS / HASHCODE =================
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-
         if (obj == null || getClass() != obj.getClass())
             return false;
 
         Quantity<?> other = (Quantity<?>) obj;
 
-        if (this.unit.getClass() != other.unit.getClass())
+        if (!this.unit.getClass().equals(other.unit.getClass())) {
             return false;
+        }
 
-        double thisInFeet =
-                this.unit.convertToBaseUnit(this.value);
+        double a = this.unit.convertToBaseUnit(this.value);
+        double b = other.unit.convertToBaseUnit(other.value);
 
-        double otherInFeet =
-                other.unit.convertToBaseUnit(other.getValue());
-
-        return Math.abs(thisInFeet - otherInFeet) < EPSILON;
+        return Math.abs(a - b) < EPSILON;
     }
 
     @Override
