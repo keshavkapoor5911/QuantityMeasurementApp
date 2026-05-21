@@ -1,7 +1,7 @@
-package com.app.quantitymeasurement.repositoryImpl;
+package com.quantity.measurement.repositoryImpl;
 
-import com.app.quantitymeasurement.entity.Entity;
-import com.app.quantitymeasurement.repository.Repository;
+import com.quantity.measurement.entity.Entity;
+import com.quantity.measurement.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ public class CacheRepository implements Repository {
 
     private final List<Entity> cache = new ArrayList<>();
 
+    //constructor
     private CacheRepository() {
     }
 

@@ -1,6 +1,6 @@
-package com.app.quantitymeasurement.model;
+package com.quantity.measurement.model;
 
-import com.app.quantitymeasurement.enums.IMeasurable;
+import com.quantity.measurement.enums.IMeasurable;
 
 public class QuantityModel<U extends IMeasurable> {
 
@@ -8,16 +8,15 @@ public class QuantityModel<U extends IMeasurable> {
     private final U unit;
 
     public QuantityModel(double value, U unit) {
-        if (unit == null) throw new NullPointerException("Unit must not be null");
         this.value = value;
         this.unit = unit;
     }
 
-    public double getValue() { return value; }
-    public U getUnit() { return unit; }
+    public double getValue() {
+        return value;
+    }
 
-    @Override
-    public String toString() {
-        return "QuantityModel(" + value + ", " + unit + ")";
+    public U getUnit() {
+        return unit;
     }
 }

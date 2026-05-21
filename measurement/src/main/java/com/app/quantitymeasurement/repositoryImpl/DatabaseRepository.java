@@ -1,5 +1,6 @@
-package com.app.quantitymeasurement.repositoryImpl;
+package com.quantity.measurement.repositoryImpl;
 
+import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,14 +12,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.app.quantitymeasurement.entity.Entity;
-import com.app.quantitymeasurement.exception.DatabaseException;
-import com.app.quantitymeasurement.repository.Repository;
+import com.quantity.measurement.entity.Entity;
+import com.quantity.measurement.exception.DatabaseException;
+import com.quantity.measurement.repository.Repository;
 
 /**
  * JDBC-based repository implementation.
  */
-@org.springframework.stereotype.Repository
 public class DatabaseRepository implements Repository {
 
     private static final Logger LOGGER =

@@ -1,6 +1,6 @@
-package com.app.quantitymeasurement.service;
+package com.quantity.measurement.service;
 
-import com.app.quantitymeasurement.dto.QuantityDTO;
+import com.quantity.measurement.dto.QuantityDTO;
 
 // Application/service layer contract
 // Purpose:

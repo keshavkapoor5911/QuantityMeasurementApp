@@ -1,4 +1,4 @@
-package com.app.quantitymeasurement.exception;
+package com.quantity.measurement.exception;
 /**
  * Custom exception for database-related errors.
  * Wraps JDBC exceptions with meaningful messages.
